@@ -297,52 +297,6 @@ this.docHtml = marked.parser(tokens);
           store.hydrateTheme()
           store.setDoc(docId)
           window.addEventListener('keydown', onKeyDown)
-          
-          // 添加WebSocket监听
-          if (window.WebSocket) {
-            // 连接到文件更新WebSocket服务
-            const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-            const ws = new WebSocket(`${wsProtocol}//${window.location.host}/file-watcher`);
-            
-            ws.onopen = () => {
-              console.log('Connected to file watcher');
-              // 订阅Markdown文件变化
-              ws.send(JSON.stringify({
-                type: 'subscribe',
-                pattern: '*.md'
-              }));
-            };
-            
-            ws.onmessage = (event) => {
-              try {
-                const data = JSON.parse(event.data);
-                if (data.type === 'fileChanged') {
-                  // 提取文件名作为文档ID
-                  const fileName = data.path.split('/').pop();
-                  const updatedDocId = fileName.replace('.md', '');
-                  
-                  // 如果是当前查看的文档，刷新内容
-                  if (store.activeDocId === updatedDocId) {
-                    store.setDoc(updatedDocId, true);
-                  }
-                }
-              } catch (e) {
-                console.error('Error processing websocket message:', e);
-              }
-            };
-            
-            ws.onerror = (error) => {
-              console.error('WebSocket error:', error);
-            };
-            
-            ws.onclose = () => {
-              console.log('File watcher connection closed. Reconnecting...');
-              // 3秒后尝试重连
-              setTimeout(() => {
-                // 简单重连逻辑
-              }, 3000);
-            };
-          }
         })
   
         onBeforeUnmount(() => {
