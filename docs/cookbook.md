@@ -12,14 +12,7 @@ const cafm = await loadScanpy('adata.h5ad')
 
 ## 2. 内嵌实验日志
 
-```ts
-watch(() => store.result, (value) => {
-  sendToNotebook({
-    perturbation: store.lastRun,
-    summary: value?.delta ?? 0
-  })
-})
-```
+
 
 ## 3. 自定义可视化
 
