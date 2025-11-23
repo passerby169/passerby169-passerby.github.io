@@ -215,11 +215,8 @@ setDoc(id, forceRefresh = false) {
           depth: token.depth
         }));
       // 解析为HTML
-      this.docHtml = marked.parser(tokens, {
-        headerIds: true,
-        mangle: false,
-        slugger: { slug: slugify }
-      });
+// 注意：移除了 headerIds 等旧版参数，直接转换，确保能在新版 marked.js 下运行
+this.docHtml = marked.parser(tokens);
     } else {
       this.docHtml = `<pre>${markdown}</pre>`;
       this.docToc = [];
