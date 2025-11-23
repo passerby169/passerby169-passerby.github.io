@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>scCAFM · API</title>
+    <link rel="stylesheet" href="../assets/css/site.css" />
+  </head>
+  <body data-theme="dark" data-root=".." data-docs="../../docs" data-doc-id="api">
+    <div id="doc-app" v-cloak>
+      <header class="site-header">
+        <div class="nav-wrapper">
+          <div class="nav-left">
+            <a class="brand" :href="resolveLink('index.html')" aria-label="scCAFM">
+              <div class="brand-mark">sc</div>
+              <div>
+                <div>scCAFM</div>
+                <small style="color: var(--text-secondary)">Docs</small>
+              </div>
+            </a>
+            <button class="search-trigger" type="button" @click="openSearch">
+              <span>Search</span>
+              <span class="kbd">Ctrl</span>
+              <span class="kbd">K</span>
+            </button>
+          </div>
+          <nav class="nav-links">
+            <template v-for="link in navLinks" :key="link.label">
+              <div v-if="link.children" class="nav-item has-children">
+                <button type="button">{{ link.label }}</button>
+                <div class="nav-dropdown">
+                  <a
+                    v-for="child in link.children"
+                    :key="child.label"
+                    :href="child.external ? child.href : resolveLink(child.path)"
+                    :target="child.external ? '_blank' : '_self'"
+                    :rel="child.external ? 'noreferrer' : null"
+                  >
+                    {{ child.label }}
+                  </a>
+                </div>
+              </div>
+              <div v-else class="nav-item">
+                <a :href="resolveLink(link.path)">{{ link.label }}</a>
+              </div>
+            </template>
+          </nav>
+          <button class="icon-btn" @click="toggleTheme" aria-label="切换主题">&#9790;</button>
+        </div>
+      </header>
+
+      <section class="doc-shell">
+        <aside class="doc-sidebar">
+          <div class="doc-nav-group" v-for="group in docNav" :key="group.title">
+            <p class="doc-nav-group-title">{{ group.title }}</p>
+            <button
+              class="doc-nav-link"
+              v-for="page in group.pages"
+              :key="page.id"
+              :class="{ active: docMeta && docMeta.id === page.id }"
+              @click="setDoc(page.id)"
+            >
+              {{ page.title }}
+            </button>
+          </div>
+        </aside>
+
+        <div class="doc-main">
+          <article class="doc-article">
+            <header>
+              <span class="badge">{{ docMeta?.badge }}</span>
+              <h1>{{ docMeta?.title }}</h1>
+              <p style="color: var(--text-secondary)">{{ docMeta?.summary }}</p>
+            </header>
+            <div v-if="docLoading">加载中...</div>
+            <div v-else class="doc-markdown" v-html="docHtml"></div>
+          </article>
+          <aside class="doc-toc" v-if="docToc.length">
+            <p class="doc-toc-title">On this page</p>
+            <a v-for="heading in docToc" :key="heading.id" :href="'#' + heading.id">
+              {{ heading.title }}
+            </a>
+          </aside>
+        </div>
+      </section>
+      <div class="search-overlay" v-if="searchOpen" @click.self="closeSearch">
+        <div class="search-modal">
+          <header>
+            <strong>Search docs</strong>
+            <span class="kbd">Esc</span>
+          </header>
+          <input type="search" placeholder="输入关键字" v-model="searchQuery" data-search-input />
+          <div class="search-results" v-if="searchResults.length">
+            <div class="search-result" v-for="result in searchResults" :key="result.id" @click="setDoc(result.id)">
+              <div class="search-result-title">{{ result.title }}</div>
+              <div class="search-result-desc">{{ result.summary }}</div>
+            </div>
+          </div>
+          <p v-else style="color: var(--text-secondary); margin-top: 1rem">暂无匹配内容</p>
+        </div>
+      </div>
+    </div>
+
+    <script src="../assets/js/vendor/vue.global.prod.js"></script>
+    <script src="../assets/js/vendor/vue-demi.iife.js"></script>
+    <script src="../assets/js/vendor/pinia.iife.prod.js"></script>
+    <script src="../assets/js/vendor/marked.min.js"></script>
+    <script src="../assets/js/docs-inline.js"></script>
+    <script src="../assets/js/site.js"></script>
+    <script>
+      window.addEventListener('DOMContentLoaded', () => {
+        window.scCAFMFront.mountDocPage('#doc-app', document.body.dataset.docId || 'api')
+      })
+    </script>
+  </body>
+</html>
